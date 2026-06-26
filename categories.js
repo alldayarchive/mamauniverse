@@ -1,8 +1,23 @@
-// 여기에 추가하면 메인 페이지 메뉴에 자동으로 나타납니다.
 const MAMA_CONFIG = [
-    { id: 'home', name: '홈 대시보드', icon: '🏠', component: 'HomeModule' },
-    { id: 'global-talk', name: '글로벌 톡', icon: '🌍', component: 'TalkModule' },
-    { id: 'qna', name: '질문/답변', icon: '❓', component: 'QnaModule' },
-    // 나중에 추가하고 싶으면 아래에 한 줄 더!
-    // { id: 'market', name: '나눔 장터', icon: '🎁', component: 'MarketModule' },
+    { 
+        id: 'home', 
+        name: '홈 대시보드', 
+        icon: '🏠', 
+        component: 'HomeModule',
+        description: '유니버스의 오늘의 소식을 확인하세요.'
+    },
+    { 
+        id: 'global-talk', 
+        name: '글로벌 톡', 
+        icon: '🌍', 
+        component: 'TalkModule',
+        description: '전 세계 엄마들과 언어 장벽 없이 대화하세요.'
+    },
+    { 
+        id: 'qna', 
+        name: '육아 지식인', 
+        icon: '💡', 
+        component: 'QnaModule',
+        description: '궁금한 육아 정보, 선배 엄마들이 답해드려요.'
+    }
 ];
