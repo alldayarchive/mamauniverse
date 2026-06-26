@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mama Universe 🌌</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> <!-- 관리가 쉬운 Vue.js 사용 -->
+</head>
+<body class="bg-gray-50">
+    <div id="app" class="flex h-screen">
+        <!-- 왼쪽 사이드바 (카테고리 조절기) -->
+        <aside class="w-64 bg-white border-r flex flex-col">
+            <div class="p-6 border-b">
+                <h1 class="text-2xl font-bold text-indigo-600">Mama Universe</h1>
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <!-- 카테고리가 추가되면 여기서 자동으로 늘어남 -->
+                <button v-for="menu in categories" :key="menu.id" 
+                    @click="currentTab = menu.id"
+                    :class="['w-full text-left p-3 rounded-lg transition', currentTab === menu.id ? 'bg-indigo-50 text-indigo-600 font-bold' : 'hover:bg-gray-100']">
+                    {{ menu.icon }} {{ menu.name }}
+                </button>
+            </nav>
+        </aside>
+
+        <!-- 메인 콘텐츠 영역 -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-white border-b flex items-center px-8 justify-between">
+                <h2 class="text-xl font-semibold">{{ currentCategory.name }}</h2>
+                <div class="text-sm text-gray-500">Global Mom Community</div>
+            </header>
+            
+            <section class="flex-1 overflow-y-auto p-8">
+                <!-- 독립된 모듈이 나타나는 곳 -->
+                <component :is="currentCategory.component"></component>
+            </section>
+        </main>
+    </div>
+
+    <!-- 여기서부터 각 카테고리 파일(모듈)들을 정의합니다 -->
+    <script src="./categories.js"></script>
+    <script>
+        const { createApp, defineAsyncComponent } = Vue;
+
+        const app = createApp({
+            data() {
+                return {
+                    currentTab: 'home',
+                    categories: MAMA_CONFIG // categories.js에서 가져옴
+                }
+            },
+            computed: {
+                currentCategory() {
+                    return this.categories.find(c => c.id === this.currentTab);
+                }
+            }
+        });
+
+        // 카테고리 등록
+        MAMA_CONFIG.forEach(cat => {
+            app.component(cat.component, defineAsyncComponent(() => import(`./modules/${cat.id}.js`)));
+        });
+
+        app.mount('#app');
+    </script>
+</body>
+</html>
