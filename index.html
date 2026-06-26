@@ -4,41 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mama Universe 🌌</title>
+    <!-- 구글 폰트: 포근한 느낌의 Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> <!-- 관리가 쉬운 Vue.js 사용 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body { font-family: 'Quicksand', sans-serif; }
+        .pastel-gradient {
+            background: linear-gradient(135deg, #fff5f5 0%, #fff0f6 100%);
+        }
+        .sidebar-active {
+            background-color: #ffe4e6; /* 연한 핑크 */
+            color: #fb7185; /* 진한 핑크 */
+            box-shadow: 0 4px 15px rgba(251, 113, 133, 0.1);
+        }
+    </style>
 </head>
-<body class="bg-gray-50">
-    <div id="app" class="flex h-screen">
-        <!-- 왼쪽 사이드바 (카테고리 조절기) -->
-        <aside class="w-64 bg-white border-r flex flex-col">
-            <div class="p-6 border-b">
-                <h1 class="text-2xl font-bold text-indigo-600">Mama Universe</h1>
+<body class="pastel-gradient text-gray-700">
+    <div id="app" class="flex h-screen overflow-hidden">
+        
+        <!-- 왼쪽 사이드바 (포근한 핑크톤) -->
+        <aside class="w-72 bg-white/60 backdrop-blur-md border-r border-pink-100 flex flex-col m-4 rounded-3xl shadow-xl shadow-pink-100/50">
+            <div class="p-8 text-center">
+                <h1 class="text-2xl font-bold text-pink-400 tracking-tight">Mama Universe 🌌</h1>
+                <p class="text-xs text-pink-300 mt-1 uppercase tracking-widest font-semibold">Global Community</p>
             </div>
-            <nav class="flex-1 p-4 space-y-2">
-                <!-- 카테고리가 추가되면 여기서 자동으로 늘어남 -->
+            
+            <nav class="flex-1 px-4 space-y-3">
                 <button v-for="menu in categories" :key="menu.id" 
                     @click="currentTab = menu.id"
-                    :class="['w-full text-left p-3 rounded-lg transition', currentTab === menu.id ? 'bg-indigo-50 text-indigo-600 font-bold' : 'hover:bg-gray-100']">
-                    {{ menu.icon }} {{ menu.name }}
+                    :class="['w-full flex items-center space-x-4 px-6 py-4 rounded-2xl transition-all duration-300', currentTab === menu.id ? 'sidebar-active font-bold scale-105' : 'text-gray-400 hover:bg-pink-50 hover:text-pink-400']">
+                    <span class="text-xl">{{ menu.icon }}</span>
+                    <span class="text-md">{{ menu.name }}</span>
                 </button>
             </nav>
+
+            <div class="p-6">
+                <div class="bg-pink-100/50 p-4 rounded-2xl text-center">
+                    <p class="text-xs text-pink-400 font-medium">오늘도 힘내요, 엄마! ❤️</p>
+                </div>
+            </div>
         </aside>
 
         <!-- 메인 콘텐츠 영역 -->
-        <main class="flex-1 flex flex-col overflow-hidden">
-            <header class="h-16 bg-white border-b flex items-center px-8 justify-between">
-                <h2 class="text-xl font-semibold">{{ currentCategory.name }}</h2>
-                <div class="text-sm text-gray-500">Global Mom Community</div>
+        <main class="flex-1 flex flex-col m-4 ml-0 overflow-hidden bg-white/80 backdrop-blur-md rounded-3xl shadow-xl shadow-pink-100/50 border border-white">
+            <!-- 상단 바 -->
+            <header class="h-20 flex items-center px-10 justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">{{ currentCategory.name }}</h2>
+                    <p class="text-sm text-pink-300">{{ currentCategory.description }}</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button class="w-10 h-10 bg-pink-50 rounded-full flex items-center justify-center text-pink-400 shadow-sm">🔔</button>
+                    <div class="w-10 h-10 bg-pink-200 rounded-full border-2 border-white shadow-md"></div>
+                </div>
             </header>
             
-            <section class="flex-1 overflow-y-auto p-8">
-                <!-- 독립된 모듈이 나타나는 곳 -->
-                <component :is="currentCategory.component"></component>
+            <!-- 독립 모듈이 로드되는 영역 -->
+            <section class="flex-1 overflow-y-auto p-10 pt-4">
+                <transition name="fade" mode="out-in">
+                    <component :is="currentCategory.component" :key="currentTab"></component>
+                </transition>
             </section>
         </main>
     </div>
 
-    <!-- 여기서부터 각 카테고리 파일(모듈)들을 정의합니다 -->
     <script src="./categories.js"></script>
     <script>
         const { createApp, defineAsyncComponent } = Vue;
@@ -47,7 +77,7 @@
             data() {
                 return {
                     currentTab: 'home',
-                    categories: MAMA_CONFIG // categories.js에서 가져옴
+                    categories: MAMA_CONFIG
                 }
             },
             computed: {
@@ -57,12 +87,18 @@
             }
         });
 
-        // 카테고리 등록
+        // 깃허브에서 파일만 추가하면 자동으로 컴포넌트 등록
         MAMA_CONFIG.forEach(cat => {
             app.component(cat.component, defineAsyncComponent(() => import(`./modules/${cat.id}.js`)));
         });
 
         app.mount('#app');
     </script>
+
+    <style>
+        /* 부드러운 전환 효과 */
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
+    </style>
 </body>
 </html>
